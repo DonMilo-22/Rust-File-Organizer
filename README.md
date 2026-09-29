@@ -46,3 +46,7 @@ Rust filesystem APIs, enums, pattern matching, error propagation, path handling 
 ## 📄 License
 
 MIT.
+
+## 🆕 Recent changes
+
+- Hidden files are now skipped by default, with a new `--include-hidden` option when you want to organize them too.

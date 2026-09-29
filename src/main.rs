@@ -26,15 +26,16 @@ fn safe_destination(dir: &Path, name: &str) -> PathBuf {
     unreachable!()
 }
 
-fn run(root: &Path, dry: bool) -> io::Result<()> {
+fn run(root: &Path, dry: bool, include_hidden: bool) -> io::Result<()> {
     let mut moved = 0;
     for item in fs::read_dir(root)? {
         let entry = item?;
         let path = entry.path();
         if !path.is_file() { continue; }
+        let name = path.file_name().and_then(|s| s.to_str()).unwrap_or("file");
+        if !include_hidden && name.starts_with('.') { continue; }
         let ext = path.extension().and_then(|s| s.to_str()).unwrap_or("");
         let target_dir = root.join(category(ext));
-        let name = path.file_name().and_then(|s| s.to_str()).unwrap_or("file");
         let target = safe_destination(&target_dir, name);
         println!("{} -> {}", path.display(), target.display());
         if !dry { fs::create_dir_all(&target_dir)?; fs::rename(&path, &target)?; }
@@ -46,8 +47,9 @@ fn run(root: &Path, dry: bool) -> io::Result<()> {
 
 fn main() {
     let args: Vec<String> = env::args().skip(1).collect();
-    if args.is_empty() { eprintln!("Usage: cargo run -- <folder> [--dry-run]"); return; }
+    if args.is_empty() { eprintln!("Usage: cargo run -- <folder> [--dry-run] [--include-hidden]"); return; }
     let dry = args.iter().any(|a| a == "--dry-run");
-    let folder = args.iter().find(|a| *a != "--dry-run").unwrap();
-    if let Err(e) = run(Path::new(folder), dry) { eprintln!("Error: {}", e); std::process::exit(1); }
+    let include_hidden = args.iter().any(|a| a == "--include-hidden");
+    let folder = args.iter().find(|a| *a != "--dry-run" && *a != "--include-hidden").unwrap();
+    if let Err(e) = run(Path::new(folder), dry, include_hidden) { eprintln!("Error: {}", e); std::process::exit(1); }
 }

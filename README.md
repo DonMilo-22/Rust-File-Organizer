@@ -49,4 +49,10 @@ MIT.
 
 ## 🆕 Recent changes
 
+### 2026-10-04
+
+- The final summary now breaks down organized files by category.
+
+### Previous update
+
 - Hidden files are now skipped by default, with a new `--include-hidden` option when you want to organize them too.

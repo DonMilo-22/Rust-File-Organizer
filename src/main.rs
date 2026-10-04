@@ -1,4 +1,4 @@
-use std::{env, fs, io, path::{Path, PathBuf}};
+use std::{collections::BTreeMap, env, fs, io, path::{Path, PathBuf}};
 
 fn category(ext: &str) -> &'static str {
     match ext.to_ascii_lowercase().as_str() {
@@ -28,6 +28,7 @@ fn safe_destination(dir: &Path, name: &str) -> PathBuf {
 
 fn run(root: &Path, dry: bool, include_hidden: bool) -> io::Result<()> {
     let mut moved = 0;
+    let mut counts: BTreeMap<&str, usize> = BTreeMap::new();
     for item in fs::read_dir(root)? {
         let entry = item?;
         let path = entry.path();
@@ -35,13 +36,16 @@ fn run(root: &Path, dry: bool, include_hidden: bool) -> io::Result<()> {
         let name = path.file_name().and_then(|s| s.to_str()).unwrap_or("file");
         if !include_hidden && name.starts_with('.') { continue; }
         let ext = path.extension().and_then(|s| s.to_str()).unwrap_or("");
-        let target_dir = root.join(category(ext));
+        let group = category(ext);
+        let target_dir = root.join(group);
         let target = safe_destination(&target_dir, name);
         println!("{} -> {}", path.display(), target.display());
         if !dry { fs::create_dir_all(&target_dir)?; fs::rename(&path, &target)?; }
         moved += 1;
+        *counts.entry(group).or_default() += 1;
     }
     println!("{} file(s) {}", moved, if dry {"would be organized"} else {"organized"});
+    for (group, count) in counts { println!("  {}: {}", group, count); }
     Ok(())
 }
 

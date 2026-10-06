@@ -28,13 +28,14 @@ fn safe_destination(dir: &Path, name: &str) -> PathBuf {
 
 fn run(root: &Path, dry: bool, include_hidden: bool) -> io::Result<()> {
     let mut moved = 0;
+    let mut hidden_skipped = 0;
     let mut counts: BTreeMap<&str, usize> = BTreeMap::new();
     for item in fs::read_dir(root)? {
         let entry = item?;
         let path = entry.path();
         if !path.is_file() { continue; }
         let name = path.file_name().and_then(|s| s.to_str()).unwrap_or("file");
-        if !include_hidden && name.starts_with('.') { continue; }
+        if !include_hidden && name.starts_with('.') { hidden_skipped += 1; continue; }
         let ext = path.extension().and_then(|s| s.to_str()).unwrap_or("");
         let group = category(ext);
         let target_dir = root.join(group);
@@ -46,6 +47,7 @@ fn run(root: &Path, dry: bool, include_hidden: bool) -> io::Result<()> {
     }
     println!("{} file(s) {}", moved, if dry {"would be organized"} else {"organized"});
     for (group, count) in counts { println!("  {}: {}", group, count); }
+    if hidden_skipped > 0 { println!("  Hidden skipped: {}", hidden_skipped); }
     Ok(())
 }
 

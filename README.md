@@ -49,6 +49,12 @@ MIT.
 
 ## 🆕 Recent changes
 
+### 2026-10-05
+
+- The summary now reports how many hidden files were skipped when `--include-hidden` is not used.
+
+### 2026-10-04
+
 ### 2026-10-04
 
 - The final summary now breaks down organized files by category.

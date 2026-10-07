@@ -56,6 +56,9 @@ fn main() {
     if args.is_empty() { eprintln!("Usage: cargo run -- <folder> [--dry-run] [--include-hidden]"); return; }
     let dry = args.iter().any(|a| a == "--dry-run");
     let include_hidden = args.iter().any(|a| a == "--include-hidden");
-    let folder = args.iter().find(|a| *a != "--dry-run" && *a != "--include-hidden").unwrap();
+    let Some(folder) = args.iter().find(|a| *a != "--dry-run" && *a != "--include-hidden") else {
+        eprintln!("Usage: cargo run -- <folder> [--dry-run] [--include-hidden]");
+        std::process::exit(2);
+    };
     if let Err(e) = run(Path::new(folder), dry, include_hidden) { eprintln!("Error: {}", e); std::process::exit(1); }
 }

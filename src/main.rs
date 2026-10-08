@@ -26,7 +26,7 @@ fn safe_destination(dir: &Path, name: &str) -> PathBuf {
     unreachable!()
 }
 
-fn run(root: &Path, dry: bool, include_hidden: bool) -> io::Result<()> {
+fn run(root: &Path, dry: bool, include_hidden: bool, only: Option<&str>) -> io::Result<()> {
     let mut moved = 0;
     let mut hidden_skipped = 0;
     let mut counts: BTreeMap<&str, usize> = BTreeMap::new();
@@ -38,6 +38,7 @@ fn run(root: &Path, dry: bool, include_hidden: bool) -> io::Result<()> {
         if !include_hidden && name.starts_with('.') { hidden_skipped += 1; continue; }
         let ext = path.extension().and_then(|s| s.to_str()).unwrap_or("");
         let group = category(ext);
+        if let Some(filter) = only { if !group.eq_ignore_ascii_case(filter) { continue; } }
         let target_dir = root.join(group);
         let target = safe_destination(&target_dir, name);
         println!("{} -> {}", path.display(), target.display());
@@ -53,12 +54,15 @@ fn run(root: &Path, dry: bool, include_hidden: bool) -> io::Result<()> {
 
 fn main() {
     let args: Vec<String> = env::args().skip(1).collect();
-    if args.is_empty() { eprintln!("Usage: cargo run -- <folder> [--dry-run] [--include-hidden]"); return; }
+    if args.is_empty() { eprintln!("Usage: cargo run -- <folder> [--dry-run] [--include-hidden] [--only category]"); return; }
     let dry = args.iter().any(|a| a == "--dry-run");
     let include_hidden = args.iter().any(|a| a == "--include-hidden");
-    let Some(folder) = args.iter().find(|a| *a != "--dry-run" && *a != "--include-hidden") else {
-        eprintln!("Usage: cargo run -- <folder> [--dry-run] [--include-hidden]");
+    let only = args.iter().position(|a| a == "--only").and_then(|i| args.get(i + 1)).map(String::as_str);
+    let Some(folder) = args.iter().enumerate().find_map(|(i,a)| {
+        if a == "--dry-run" || a == "--include-hidden" || a == "--only" || (i > 0 && args[i-1] == "--only") { None } else { Some(a) }
+    }) else {
+        eprintln!("Usage: cargo run -- <folder> [--dry-run] [--include-hidden] [--only category]");
         std::process::exit(2);
     };
-    if let Err(e) = run(Path::new(folder), dry, include_hidden) { eprintln!("Error: {}", e); std::process::exit(1); }
+    if let Err(e) = run(Path::new(folder), dry, include_hidden, only) { eprintln!("Error: {}", e); std::process::exit(1); }
 }

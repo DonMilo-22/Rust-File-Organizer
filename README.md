@@ -49,6 +49,10 @@ MIT.
 
 ## 🆕 Recent changes
 
+### 2026-10-07
+
+- Added `--only <category>` to organize just one category while leaving other files untouched.
+
 ### 2026-10-06
 
 - The CLI now shows usage for missing folders instead of panicking.

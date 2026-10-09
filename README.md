@@ -49,6 +49,10 @@ MIT.
 
 ## 🆕 Recent changes
 
+### 2026-10-08
+
+- The final summary now shows the total size of files organized or previewed.
+
 ### 2026-10-07
 
 - Added `--only <category>` to organize just one category while leaving other files untouched.

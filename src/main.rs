@@ -61,6 +61,13 @@ fn main() {
     let dry = args.iter().any(|a| a == "--dry-run");
     let include_hidden = args.iter().any(|a| a == "--include-hidden");
     let only = args.iter().position(|a| a == "--only").and_then(|i| args.get(i + 1)).map(String::as_str);
+    if let Some(filter) = only {
+        let valid = ["Images","Documents","Audio","Video","Archives","Code","Other"];
+        if !valid.iter().any(|v| v.eq_ignore_ascii_case(filter)) {
+            eprintln!("Unknown category: {}. Use one of: {}", filter, valid.join(", "));
+            std::process::exit(2);
+        }
+    }
     let Some(folder) = args.iter().enumerate().find_map(|(i,a)| {
         if a == "--dry-run" || a == "--include-hidden" || a == "--only" || (i > 0 && args[i-1] == "--only") { None } else { Some(a) }
     }) else {

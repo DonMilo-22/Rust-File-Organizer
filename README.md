@@ -49,6 +49,10 @@ MIT.
 
 ## 🆕 Recent changes
 
+### 2026-10-09
+
+- `--only` now validates category names and prints the supported options when the value is invalid.
+
 ### 2026-10-08
 
 - The final summary now shows the total size of files organized or previewed.

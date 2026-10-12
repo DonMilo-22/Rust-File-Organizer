@@ -57,6 +57,10 @@ fn run(root: &Path, dry: bool, include_hidden: bool, only: Option<&str>) -> io::
 
 fn main() {
     let args: Vec<String> = env::args().skip(1).collect();
+    if args.iter().any(|a| a == "--list-categories") {
+        println!("Images, Documents, Audio, Video, Archives, Code, Other");
+        return;
+    }
     if args.is_empty() { eprintln!("Usage: cargo run -- <folder> [--dry-run] [--include-hidden] [--only category]"); return; }
     let dry = args.iter().any(|a| a == "--dry-run");
     let include_hidden = args.iter().any(|a| a == "--include-hidden");

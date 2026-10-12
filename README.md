@@ -1,78 +1,75 @@
-# 🦀 Rust File Organizer
+# Rust File Organizer
 
-> Fast and safe command-line file organizer built with Rust.
+Organizador de archivos por extensión, desarrollado con Rust y su biblioteca estándar.
 
-![Rust](https://img.shields.io/badge/Rust-stable-000000?logo=rust&logoColor=white)
-![CLI](https://img.shields.io/badge/interface-CLI-black)
-![License](https://img.shields.io/badge/license-MIT-green)
+Agrupa archivos de una carpeta en categorías; permite simular movimientos antes de aplicarlos.
 
-Point the program at a directory and it sorts files into categories such as Images, Documents, Audio, Video, Archives and Code.
+## Funciones actuales
 
-## ✨ Features
+- Categorías Images, Documents, Audio, Video, Archives, Code y Other.
+- Simulación con `--dry-run` y filtro por categoría con `--only`.
+- Omisión de nombres que comienzan con punto, salvo `--include-hidden`.
+- Nombres numerados si el destino ya existe.
+- Resumen por categoría, archivos omitidos y tamaño total.
 
-- Extension-based categorization
-- Dry-run mode before moving anything
-- Collision-safe filenames
-- Ignores directories
-- Clear movement summary
-- Standard-library-only implementation
+## Requisitos
 
-## 🚀 Run
+Rust estable y Cargo, con acceso de lectura y escritura a la carpeta elegida. Los ejemplos utilizan una terminal tipo Bash; en Windows reemplaza la ruta por una carpeta local.
 
-Preview changes first:
+## Instalación y simulación
 
 ```bash
+git clone https://github.com/DonMilo-22/Rust-File-Organizer.git
+cd Rust-File-Organizer
 cargo run -- ~/Downloads --dry-run
 ```
 
-Organize for real:
+Después de revisar la salida, aplica los movimientos:
 
 ```bash
 cargo run -- ~/Downloads
 ```
 
-## 📁 Categories
+## Opciones
 
-Images, Documents, Audio, Video, Archives, Code and Other.
+| Opción | Uso |
+|---|---|
+| `<carpeta>` | Carpeta cuyos archivos inmediatos se organizarán. |
+| `--dry-run` | Imprime movimientos sin crear carpetas ni mover archivos. |
+| `--only <categoría>` | Procesa solo esa categoría; no distingue mayúsculas. |
+| `--include-hidden` | Incluye archivos cuyos nombres comienzan con punto. |
 
-## 🛡️ Safety
+```bash
+cargo run -- ~/Downloads --only Documents --dry-run
+```
 
-The program never deletes files. If a destination filename already exists, it generates a new numbered name instead of overwriting it.
+## Ejemplo antes y después
 
-## 🧠 What it demonstrates
+Ejemplo ilustrativo de una organización completa:
 
-Rust filesystem APIs, enums, pattern matching, error propagation, path handling and defensive file operations.
+| Antes | Después |
+|---|---|
+| `Downloads/foto.jpg` | `Downloads/Images/foto.jpg` |
+| `Downloads/apuntes.pdf` | `Downloads/Documents/apuntes.pdf` |
+| `Downloads/programa.py` | `Downloads/Code/programa.py` |
+| `Downloads/archivo.xyz` | `Downloads/Other/archivo.xyz` |
 
-## 📄 License
+Si `Images/foto.jpg` ya existe, el nuevo destino será `Images/foto_1.jpg` o el siguiente número disponible.
 
-MIT.
+## Almacenamiento y límites
 
-## 🆕 Recent changes
+Modifica la carpeta indicada; no crea una base de datos. No recorre subcarpetas ni ofrece deshacer. Las categorías se determinan por extensión, no por contenido. La detección de archivos ocultos se basa en nombres con punto, no en atributos de Windows. El tamaño se imprime como `MB` con un divisor binario. La simulación no reserva destinos ni comprueba que todos los movimientos posteriores puedan completarse.
 
-### 2026-10-09
+## Comprobaciones
 
-- `--only` now validates category names and prints the supported options when the value is invalid.
+`cargo build` comprueba la compilación. Prueba `--dry-run` sobre una carpeta de ejemplo antes de usarlo con tus archivos.
 
-### 2026-10-08
+## Autor y licencia
 
-- The final summary now shows the total size of files organized or previewed.
+Desarrollado por [DonMilo-22](https://github.com/DonMilo-22).
 
-### 2026-10-07
+Licencia: MIT.
 
-- Added `--only <category>` to organize just one category while leaving other files untouched.
+## Historial
 
-### 2026-10-06
-
-- The CLI now shows usage for missing folders instead of panicking.
-
-### 2026-10-05
-
-- The summary now reports how many hidden files were skipped when `--include-hidden` is not used.
-
-### 2026-10-04
-
-- The final summary now breaks down organized files by category.
-
-### Previous update
-
-- Hidden files are now skipped by default, with a new `--include-hidden` option when you want to organize them too.
+Consulta [CHANGELOG.md](CHANGELOG.md) para ver las actualizaciones.

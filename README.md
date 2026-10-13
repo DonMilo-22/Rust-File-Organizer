@@ -74,6 +74,10 @@ Licencia: MIT.
 
 - Added `--list-categories` to print all supported organizer categories and exit.
 
+## Actualización adicional 2026-10-12
+
+- The organizer now reports when a target filename had to be adjusted to avoid overwriting an existing file.
+
 ## Historial
 
 Consulta [CHANGELOG.md](CHANGELOG.md) para ver las actualizaciones.

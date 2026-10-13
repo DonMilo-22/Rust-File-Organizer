@@ -30,6 +30,7 @@ fn run(root: &Path, dry: bool, include_hidden: bool, only: Option<&str>) -> io::
     let mut moved = 0;
     let mut hidden_skipped = 0;
     let mut total_bytes: u64 = 0;
+    let mut renamed_collisions = 0;
     let mut counts: BTreeMap<&str, usize> = BTreeMap::new();
     for item in fs::read_dir(root)? {
         let entry = item?;
@@ -42,6 +43,7 @@ fn run(root: &Path, dry: bool, include_hidden: bool, only: Option<&str>) -> io::
         if let Some(filter) = only { if !group.eq_ignore_ascii_case(filter) { continue; } }
         let target_dir = root.join(group);
         let target = safe_destination(&target_dir, name);
+        if target.file_name().and_then(|s| s.to_str()) != Some(name) { renamed_collisions += 1; }
         println!("{} -> {}", path.display(), target.display());
         total_bytes += entry.metadata()?.len();
         if !dry { fs::create_dir_all(&target_dir)?; fs::rename(&path, &target)?; }
@@ -52,6 +54,7 @@ fn run(root: &Path, dry: bool, include_hidden: bool, only: Option<&str>) -> io::
     for (group, count) in counts { println!("  {}: {}", group, count); }
     if hidden_skipped > 0 { println!("  Hidden skipped: {}", hidden_skipped); }
     println!("  Total size: {:.2} MB", total_bytes as f64 / 1_048_576.0);
+    println!("  Filename collisions avoided: {}", renamed_collisions);
     Ok(())
 }
 

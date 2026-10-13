@@ -76,6 +76,8 @@ Licencia: MIT.
 
 ## Actualización adicional 2026-10-12
 
+- The final summary now counts filename collisions avoided to prevent overwriting existing files.
+
 - The organizer now reports when a target filename had to be adjusted to avoid overwriting an existing file.
 
 ## Historial

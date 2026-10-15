@@ -83,3 +83,7 @@ Licencia: MIT.
 ## Historial
 
 Consulta [CHANGELOG.md](CHANGELOG.md) para ver las actualizaciones.
+
+## Actualización 2026-10-14
+
+- The organizer now explains when no files match the selected category or folder contents; duplicate collision counters were cleaned up.

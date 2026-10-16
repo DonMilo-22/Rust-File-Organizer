@@ -40,9 +40,9 @@ fn run(root: &Path, dry: bool, include_hidden: bool, only: Option<&str>) -> io::
         let name = path.file_name().and_then(|s| s.to_str()).unwrap_or("file");
         if !include_hidden && name.starts_with('.') { hidden_skipped += 1; continue; }
         let ext = path.extension().and_then(|s| s.to_str()).unwrap_or("");
-        if ext.is_empty() { extensionless += 1; }
         let group = category(ext);
         if let Some(filter) = only { if !group.eq_ignore_ascii_case(filter) { continue; } }
+        if ext.is_empty() { extensionless += 1; }
         let target_dir = root.join(group);
         let target = safe_destination(&target_dir, name);
         if target.file_name().and_then(|s| s.to_str()) != Some(name) { renamed_collisions += 1; }

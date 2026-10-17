@@ -26,7 +26,7 @@ fn safe_destination(dir: &Path, name: &str) -> PathBuf {
     unreachable!()
 }
 
-fn run(root: &Path, dry: bool, include_hidden: bool, only: Option<&str>) -> io::Result<()> {
+fn run(root: &Path, dry: bool, include_hidden: bool, only: Option<&str>, stats_only: bool) -> io::Result<()> {
     let mut moved = 0;
     let mut hidden_skipped = 0;
     let mut total_bytes: u64 = 0;
@@ -46,7 +46,7 @@ fn run(root: &Path, dry: bool, include_hidden: bool, only: Option<&str>) -> io::
         let target_dir = root.join(group);
         let target = safe_destination(&target_dir, name);
         if target.file_name().and_then(|s| s.to_str()) != Some(name) { renamed_collisions += 1; }
-        println!("{} -> {}", path.display(), target.display());
+        if !stats_only { println!("{} -> {}", path.display(), target.display()); }
         total_bytes += entry.metadata()?.len();
         if !dry { fs::create_dir_all(&target_dir)?; fs::rename(&path, &target)?; }
         moved += 1;
@@ -68,8 +68,8 @@ fn main() {
         println!("Images, Documents, Audio, Video, Archives, Code, Other");
         return;
     }
-    if args.is_empty() { eprintln!("Usage: cargo run -- <folder> [--dry-run] [--include-hidden] [--only category]"); return; }
-    let dry = args.iter().any(|a| a == "--dry-run");
+    if args.is_empty() { eprintln!("Usage: cargo run -- <folder> [--dry-run] [--include-hidden] [--only category] [--stats-only]"); return; }
+    let stats_only = args.iter().any(|a| a == "--stats-only");\n    let dry = stats_only || args.iter().any(|a| a == "--dry-run");
     let include_hidden = args.iter().any(|a| a == "--include-hidden");
     let only = args.iter().position(|a| a == "--only").and_then(|i| args.get(i + 1)).map(String::as_str);
     if let Some(filter) = only {
@@ -80,10 +80,10 @@ fn main() {
         }
     }
     let Some(folder) = args.iter().enumerate().find_map(|(i,a)| {
-        if a == "--dry-run" || a == "--include-hidden" || a == "--only" || (i > 0 && args[i-1] == "--only") { None } else { Some(a) }
+        if a == "--dry-run" || a == "--include-hidden" || a == "--stats-only" || a == "--only" || (i > 0 && args[i-1] == "--only") { None } else { Some(a) }
     }) else {
         eprintln!("Usage: cargo run -- <folder> [--dry-run] [--include-hidden] [--only category]");
         std::process::exit(2);
     };
-    if let Err(e) = run(Path::new(folder), dry, include_hidden, only) { eprintln!("Error: {}", e); std::process::exit(1); }
+    if let Err(e) = run(Path::new(folder), dry, include_hidden, only, stats_only) { eprintln!("Error: {}", e); std::process::exit(1); }
 }

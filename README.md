@@ -91,3 +91,12 @@ Consulta [CHANGELOG.md](CHANGELOG.md) para ver las actualizaciones.
 ## Actualización 2026-10-15
 
 - The summary now reports how many organized files have no extension.
+
+
+## Actualización 2026-10-16
+
+- Added `--stats-only`, which runs in non-destructive mode and prints category counts, total size, extensionless files, and collision statistics without listing each file.
+
+```bash
+cargo run -- ./sample-folder --stats-only
+```

@@ -100,3 +100,15 @@ Consulta [CHANGELOG.md](CHANGELOG.md) para ver las actualizaciones.
 ```bash
 cargo run -- ./sample-folder --stats-only
 ```
+
+
+## New utility: extension summary
+
+Count the file extensions in a folder before organizing it, without moving or renaming anything:
+
+```bash
+rustc tools/extension-summary.rs -o extension-summary
+./extension-summary ~/Downloads
+```
+
+The report includes extensionless files and ignores subfolder contents. It uses only the Rust standard library.

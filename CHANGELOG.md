@@ -1,3 +1,8 @@
+
+
+### 2026-10-18
+
+- Added `tools/extension-summary.rs` to count file types in a directory before any organizing or moving is performed.
 # Historial de cambios
 
 Entradas originales conservadas en inglés. Las fechas corresponden al historial existente; la última entrada no tenía fecha registrada.

@@ -112,3 +112,15 @@ rustc tools/extension-summary.rs -o extension-summary
 ```
 
 The report includes extensionless files and ignores subfolder contents. It uses only the Rust standard library.
+
+
+## New utility: recursive directory size
+
+Calculate the combined size of files inside a folder and its subfolders:
+
+```bash
+rustc tools/directory-size.rs -o directory-size
+./directory-size ~/Downloads
+```
+
+The tool reports file count and total size in MiB. It only reads file metadata; inaccessible folders are skipped with a warning.

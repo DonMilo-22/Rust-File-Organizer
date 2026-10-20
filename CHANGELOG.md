@@ -1,5 +1,10 @@
 
 
+### 2026-10-19
+
+- Added `tools/directory-size.rs` to estimate recursive file count and total size for a directory.
+
+
 ### 2026-10-18
 
 - Added `tools/extension-summary.rs` to count file types in a directory before any organizing or moving is performed.

@@ -26,7 +26,7 @@ fn safe_destination(dir: &Path, name: &str) -> PathBuf {
     unreachable!()
 }
 
-fn run(root: &Path, dry: bool, include_hidden: bool, only: Option<&str>, stats_only: bool) -> io::Result<()> {
+fn run(root: &Path, dry: bool, include_hidden: bool, only: Option<&str>, stats_only: bool, extension: Option<&str>) -> io::Result<()> {
     let mut moved = 0;
     let mut hidden_skipped = 0;
     let mut total_bytes: u64 = 0;
@@ -40,6 +40,7 @@ fn run(root: &Path, dry: bool, include_hidden: bool, only: Option<&str>, stats_o
         let name = path.file_name().and_then(|s| s.to_str()).unwrap_or("file");
         if !include_hidden && name.starts_with('.') { hidden_skipped += 1; continue; }
         let ext = path.extension().and_then(|s| s.to_str()).unwrap_or("");
+        if let Some(filter) = extension { if !ext.eq_ignore_ascii_case(filter.trim_start_matches('.')) { continue; } }
         let group = category(ext);
         if let Some(filter) = only { if !group.eq_ignore_ascii_case(filter) { continue; } }
         if ext.is_empty() { extensionless += 1; }
@@ -68,10 +69,12 @@ fn main() {
         println!("Images, Documents, Audio, Video, Archives, Code, Other");
         return;
     }
-    if args.is_empty() { eprintln!("Usage: cargo run -- <folder> [--dry-run] [--include-hidden] [--only category] [--stats-only]"); return; }
-    let stats_only = args.iter().any(|a| a == "--stats-only");\n    let dry = stats_only || args.iter().any(|a| a == "--dry-run");
+    if args.is_empty() { eprintln!("Usage: cargo run -- <folder> [--dry-run] [--include-hidden] [--only category] [--ext extension] [--stats-only]"); return; }
+    let stats_only = args.iter().any(|a| a == "--stats-only");
+    let dry = stats_only || args.iter().any(|a| a == "--dry-run");
     let include_hidden = args.iter().any(|a| a == "--include-hidden");
     let only = args.iter().position(|a| a == "--only").and_then(|i| args.get(i + 1)).map(String::as_str);
+    let extension = args.iter().position(|a| a == "--ext").and_then(|i| args.get(i + 1)).map(String::as_str);
     if let Some(filter) = only {
         let valid = ["Images","Documents","Audio","Video","Archives","Code","Other"];
         if !valid.iter().any(|v| v.eq_ignore_ascii_case(filter)) {
@@ -80,10 +83,10 @@ fn main() {
         }
     }
     let Some(folder) = args.iter().enumerate().find_map(|(i,a)| {
-        if a == "--dry-run" || a == "--include-hidden" || a == "--stats-only" || a == "--only" || (i > 0 && args[i-1] == "--only") { None } else { Some(a) }
+        if a == "--dry-run" || a == "--include-hidden" || a == "--stats-only" || a == "--only" || a == "--ext" || (i > 0 && (args[i-1] == "--only" || args[i-1] == "--ext")) { None } else { Some(a) }
     }) else {
         eprintln!("Usage: cargo run -- <folder> [--dry-run] [--include-hidden] [--only category]");
         std::process::exit(2);
     };
-    if let Err(e) = run(Path::new(folder), dry, include_hidden, only, stats_only) { eprintln!("Error: {}", e); std::process::exit(1); }
+    if let Err(e) = run(Path::new(folder), dry, include_hidden, only, stats_only, extension) { eprintln!("Error: {}", e); std::process::exit(1); }
 }

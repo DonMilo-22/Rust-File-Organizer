@@ -124,3 +124,12 @@ rustc tools/directory-size.rs -o directory-size
 ```
 
 The tool reports file count and total size in MiB. It only reads file metadata; inaccessible folders are skipped with a warning.
+
+
+## Actualización 2026-10-25
+
+- Added `--ext` to filter files by extension, independently of their broader category. Matching is case-insensitive and the option works with `--dry-run` or `--stats-only`.
+
+```bash
+cargo run -- ./sample-folder --ext pdf --dry-run
+```

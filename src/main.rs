@@ -85,7 +85,7 @@ fn main() {
     let Some(folder) = args.iter().enumerate().find_map(|(i,a)| {
         if a == "--dry-run" || a == "--include-hidden" || a == "--stats-only" || a == "--only" || a == "--ext" || (i > 0 && (args[i-1] == "--only" || args[i-1] == "--ext")) { None } else { Some(a) }
     }) else {
-        eprintln!("Usage: cargo run -- <folder> [--dry-run] [--include-hidden] [--only category]");
+        eprintln!("Usage: cargo run -- <folder> [--dry-run] [--include-hidden] [--only category] [--ext extension] [--stats-only]");
         std::process::exit(2);
     };
     if let Err(e) = run(Path::new(folder), dry, include_hidden, only, stats_only, extension) { eprintln!("Error: {}", e); std::process::exit(1); }

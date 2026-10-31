@@ -74,7 +74,9 @@ fn main() {
     let dry = stats_only || args.iter().any(|a| a == "--dry-run");
     let include_hidden = args.iter().any(|a| a == "--include-hidden");
     let only = args.iter().position(|a| a == "--only").and_then(|i| args.get(i + 1)).map(String::as_str);
-    let extension = args.iter().position(|a| a == "--ext").and_then(|i| args.get(i + 1)).map(String::as_str);\n    let min_size = args.iter().position(|a| a == "--min-size").and_then(|i| args.get(i + 1)).and_then(|v| v.parse::<u64>().ok());\n    if args.iter().any(|a| a == "--min-size") && min_size.is_none() { eprintln!("--min-size requires a non-negative byte count"); std::process::exit(2); }
+    let extension = args.iter().position(|a| a == "--ext").and_then(|i| args.get(i + 1)).map(String::as_str);
+    let min_size = args.iter().position(|a| a == "--min-size").and_then(|i| args.get(i + 1)).and_then(|v| v.parse::<u64>().ok());
+    if args.iter().any(|a| a == "--min-size") && min_size.is_none() { eprintln!("--min-size requires a non-negative byte count"); std::process::exit(2); }
     if let Some(filter) = only {
         let valid = ["Images","Documents","Audio","Video","Archives","Code","Other"];
         if !valid.iter().any(|v| v.eq_ignore_ascii_case(filter)) {

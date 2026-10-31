@@ -133,3 +133,7 @@ The tool reports file count and total size in MiB. It only reads file metadata; 
 ```bash
 cargo run -- ./sample-folder --ext pdf --dry-run
 ```
+
+## Actualización 2026-10-30
+
+- Added `--min-size BYTES` to filter files by minimum size before organizing. Example: `cargo run -- ./files --dry-run --min-size 1048576`.

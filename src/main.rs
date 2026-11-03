@@ -39,7 +39,9 @@ fn run(root: &Path, dry: bool, include_hidden: bool, only: Option<&str>, stats_o
         if !path.is_file() { continue; }
         let name = path.file_name().and_then(|s| s.to_str()).unwrap_or("file");
         if !include_hidden && name.starts_with('.') { hidden_skipped += 1; continue; }
-        if let Some(minimum) = min_size { if entry.metadata()?.len() < minimum { continue; } }\n        if let Some(maximum) = max_size { if entry.metadata()?.len() > maximum { continue; } }\n        let ext = path.extension().and_then(|s| s.to_str()).unwrap_or("");
+        if let Some(minimum) = min_size { if entry.metadata()?.len() < minimum { continue; } }
+        if let Some(maximum) = max_size { if entry.metadata()?.len() > maximum { continue; } }
+        let ext = path.extension().and_then(|s| s.to_str()).unwrap_or("");
         if let Some(filter) = extension { if !ext.eq_ignore_ascii_case(filter.trim_start_matches('.')) { continue; } }
         let group = category(ext);
         if let Some(filter) = only { if !group.eq_ignore_ascii_case(filter) { continue; } }
@@ -76,7 +78,10 @@ fn main() {
     let only = args.iter().position(|a| a == "--only").and_then(|i| args.get(i + 1)).map(String::as_str);
     let extension = args.iter().position(|a| a == "--ext").and_then(|i| args.get(i + 1)).map(String::as_str);
     let min_size = args.iter().position(|a| a == "--min-size").and_then(|i| args.get(i + 1)).and_then(|v| v.parse::<u64>().ok());
-    if args.iter().any(|a| a == "--min-size") && min_size.is_none() { eprintln!("--min-size requires a non-negative byte count"); std::process::exit(2); }\n    let max_size = args.iter().position(|a| a == "--max-size").and_then(|i| args.get(i + 1)).and_then(|v| v.parse::<u64>().ok());\n    if args.iter().any(|a| a == "--max-size") && max_size.is_none() { eprintln!("--max-size requires a non-negative byte count"); std::process::exit(2); }\n    if let (Some(min), Some(max)) = (min_size, max_size) { if min > max { eprintln!("--min-size cannot exceed --max-size"); std::process::exit(2); } }
+    if args.iter().any(|a| a == "--min-size") && min_size.is_none() { eprintln!("--min-size requires a non-negative byte count"); std::process::exit(2); }
+    let max_size = args.iter().position(|a| a == "--max-size").and_then(|i| args.get(i + 1)).and_then(|v| v.parse::<u64>().ok());
+    if args.iter().any(|a| a == "--max-size") && max_size.is_none() { eprintln!("--max-size requires a non-negative byte count"); std::process::exit(2); }
+    if let (Some(min), Some(max)) = (min_size, max_size) { if min > max { eprintln!("--min-size cannot exceed --max-size"); std::process::exit(2); } }
     if let Some(filter) = only {
         let valid = ["Images","Documents","Audio","Video","Archives","Code","Other"];
         if !valid.iter().any(|v| v.eq_ignore_ascii_case(filter)) {

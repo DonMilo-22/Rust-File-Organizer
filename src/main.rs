@@ -32,6 +32,7 @@ fn run(root: &Path, dry: bool, include_hidden: bool, only: Option<&str>, stats_o
     let mut total_bytes: u64 = 0;
     let mut renamed_collisions = 0;
     let mut extensionless = 0;
+    let mut largest_file: Option<(String, u64)> = None;
     let mut counts: BTreeMap<&str, usize> = BTreeMap::new();
     for item in fs::read_dir(root)? {
         let entry = item?;
@@ -50,7 +51,9 @@ fn run(root: &Path, dry: bool, include_hidden: bool, only: Option<&str>, stats_o
         let target = safe_destination(&target_dir, name);
         if target.file_name().and_then(|s| s.to_str()) != Some(name) { renamed_collisions += 1; }
         if !stats_only { println!("{} -> {}", path.display(), target.display()); }
-        total_bytes += entry.metadata()?.len();
+        let file_size = entry.metadata()?.len();
+        total_bytes += file_size;
+        if largest_file.as_ref().map_or(true, |(_, size)| file_size > *size) { largest_file = Some((name.to_string(), file_size)); }
         if !dry { fs::create_dir_all(&target_dir)?; fs::rename(&path, &target)?; }
         moved += 1;
         *counts.entry(group).or_default() += 1;
@@ -60,6 +63,7 @@ fn run(root: &Path, dry: bool, include_hidden: bool, only: Option<&str>, stats_o
     for (group, count) in counts { println!("  {}: {}", group, count); }
     if hidden_skipped > 0 { println!("  Hidden skipped: {}", hidden_skipped); }
     println!("  Total size: {:.2} MB", total_bytes as f64 / 1_048_576.0);
+    if let Some((name, size)) = largest_file { println!("  Largest file: {} ({:.2} MB)", name, size as f64 / 1_048_576.0); }
     println!("  Files without extension: {}", extensionless);
     println!("  Filename collisions avoided: {}", renamed_collisions);
     Ok(())

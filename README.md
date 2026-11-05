@@ -141,3 +141,7 @@ cargo run -- ./sample-folder --ext pdf --dry-run
 ## Actualización 2026-11-02
 
 - Added `--max-size BYTES` to skip files larger than a chosen size. It can be combined with `--min-size`; the minimum cannot exceed the maximum. Example: `cargo run -- ./files --dry-run --min-size 1024 --max-size 1048576`.
+
+## Actualización 2026-11-04
+
+- The end-of-run summary now identifies the largest matching file and its size, alongside the total size of all files processed.
